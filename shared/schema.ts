@@ -12,12 +12,20 @@ export const inspections = pgTable("inspections", {
   customerName: text("customer_name"),
   customerEmail: text("customer_email"),
   salesRepEmail: text("sales_rep_email"),
-  status: text("status").notNull().default("draft"), // draft, completed, submitted
+  status: text("status").notNull().default("on_delivery_pending"), // on_delivery_pending, on_delivery_completed, test_drive_pending, test_drive_completed, final_completed
   inspectionData: jsonb("inspection_data").notNull(),
   signatureData: text("signature_data"),
   totalItems: integer("total_items").notNull(),
   completedItems: integer("completed_items").notNull().default(0),
   failedItems: integer("failed_items").notNull().default(0),
+  // Two-phase tracking
+  onDeliveryStatus: text("on_delivery_status").notNull().default("pending"), // pending, completed, approved
+  onDeliveryCompletedAt: timestamp("on_delivery_completed_at"),
+  onDeliveryApprovalSignature: text("on_delivery_approval_signature"),
+  testDriveStatus: text("test_drive_status").notNull().default("pending"), // pending, completed, approved
+  testDriveCompletedAt: timestamp("test_drive_completed_at"),
+  testDriveApprovalSignature: text("test_drive_approval_signature"),
+  testDriveKilometers: integer("test_drive_kilometers").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

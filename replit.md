@@ -95,14 +95,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-- July 04, 2025: Enhanced media evidence system for failed inspection items
-  - Added support for up to 5 photos OR 1 video (max 2 minutes) per failed item
-  - Implemented client-side and server-side validation for media limits
-  - Enhanced MediaCapture component with photo/video mode selection
-  - Added real-time recording timer and progress indicators
-  - Implemented comprehensive file type, size, and duration validation
-  - Updated InspectionItem UI to show evidence requirements and thumbnails
-  - Added server-side validation to enforce 50MB file size and media count limits
+- July 04, 2025: Implemented Two-Phase Inspection Workflow
+  - Divided inspection process into "On Delivery" (static) and "Test Drive" (<100km) phases
+  - Enhanced database schema with phase-specific tracking and separate approval signatures
+  - Created comprehensive inspection checklist based on Tesla PDI Discovery Stage CSV
+  - Added phase-specific progress tracking and validation
+  - Implemented separate approval workflows with digital signatures for each phase
+  - Built responsive two-phase inspection interface with tab navigation
+  - Added phase completion requirements and automatic progression controls
+  - Enhanced media evidence system supporting up to 5 photos AND 2-minute video per failed item
+  - Integrated comprehensive validation for file types, sizes, and media count limits
 
 ## Changelog
 
