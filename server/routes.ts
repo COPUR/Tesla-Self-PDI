@@ -79,18 +79,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Upload to Google Drive
-      const driveResult = await googleDriveService.uploadFile(
-        req.file.buffer,
-        req.file.originalname,
-        req.file.mimetype
-      );
+      // Validate file size (50MB limit)
+      const MAX_FILE_SIZE = 50 * 1024 * 1024;
+      if (req.file.size > MAX_FILE_SIZE) {
+        return res.status(400).json({ error: "File size exceeds 50MB limit" });
+      }
+
+      // Validate file type
+      const isPhoto = req.file.mimetype.startsWith('image/');
+      const isVideo = req.file.mimetype.startsWith('video/');
+      
+      if (!isPhoto && !isVideo) {
+        return res.status(400).json({ error: "Invalid file type. Only photos and videos are allowed." });
+      }
+
+      // Get existing media for this item to check limits
+      const existingMedia = await storage.getInspectionMedia(inspectionId);
+      const itemMedia = existingMedia.filter(m => m.itemId === itemId);
+      const existingPhotos = itemMedia.filter(m => m.mediaType === 'photo').length;
+      const existingVideos = itemMedia.filter(m => m.mediaType === 'video').length;
+
+      // Validate media limits
+      if (isPhoto && existingPhotos >= 5) {
+        return res.status(400).json({ error: "Maximum 5 photos allowed per inspection item" });
+      }
+
+      if (isVideo && existingVideos >= 1) {
+        return res.status(400).json({ error: "Only one video allowed per inspection item" });
+      }
+
+      // For videos, validate duration if possible (this is best effort, client-side validation is primary)
+      if (isVideo) {
+        // Note: Server-side video duration validation is complex and resource-intensive
+        // The 2-minute limit is primarily enforced on the client side
+        console.log(`Video upload: ${req.file.originalname}, size: ${req.file.size} bytes`);
+      }
+
+      // Upload to Google Drive (use resumable upload for videos over 10MB)
+      let driveResult;
+      if (isVideo && req.file.size > 10 * 1024 * 1024) {
+        driveResult = await googleDriveService.resumableUpload(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+      } else {
+        driveResult = await googleDriveService.uploadFile(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+      }
 
       // Save media record
       const mediaRecord = await storage.createInspectionMedia({
         inspectionId,
         itemId,
-        mediaType,
+        mediaType: isPhoto ? 'photo' : 'video',
         fileName: req.file.originalname,
         driveFileId: driveResult.id,
         driveLink: driveResult.webViewLink,

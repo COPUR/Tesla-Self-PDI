@@ -93,7 +93,17 @@ The Tesla Delivery Companion is a mobile-first web application designed to strea
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+- July 04, 2025: Enhanced media evidence system for failed inspection items
+  - Added support for up to 5 photos OR 1 video (max 2 minutes) per failed item
+  - Implemented client-side and server-side validation for media limits
+  - Enhanced MediaCapture component with photo/video mode selection
+  - Added real-time recording timer and progress indicators
+  - Implemented comprehensive file type, size, and duration validation
+  - Updated InspectionItem UI to show evidence requirements and thumbnails
+  - Added server-side validation to enforce 50MB file size and media count limits
+
 ## Changelog
 
-Changelog:
-- July 04, 2025. Initial setup
+- July 04, 2025: Initial project setup and comprehensive test suite creation
